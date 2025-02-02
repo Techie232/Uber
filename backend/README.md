@@ -433,3 +433,209 @@ curl -X POST http://localhost:4000/captains/register \
   "token": "jwt_token"
 }
 ```
+
+# Captain Login API
+
+## Endpoint: `/captains/login`
+
+### Method: POST
+
+### Description:
+This endpoint is used to log in an existing captain. It validates the input data, checks the captain's credentials, and returns a JWT token if the credentials are valid.
+
+### Request Body:
+The request body should be a JSON object with the following fields:
+
+- `email` (string, required, must be a valid email)
+- `password` (string, required, minimum length: 6)
+
+Example:
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}
+```
+
+### Responses:
+
+#### Success:
+- **Status Code:** 200 OK
+- **Response Body:**
+  ```json
+  {
+    "message": "Captain logged in successfully",
+    "captain": {
+      "_id": "captain_id",
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
+      },
+      "email": "john.doe@example.com",
+      "vehicle": {
+        "color": "red",
+        "plate": "ABC123",
+        "capacity": 4,
+        "vehicleType": "car"
+      }
+    },
+    "token": "jwt_token"
+  }
+  ```
+
+#### Validation Errors:
+- **Status Code:** 400 Bad Request
+- **Response Body:**
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Invalid Email",
+        "param": "email",
+        "location": "body"
+      },
+      {
+        "msg": "Password must be at least 6 characters long",
+        "param": "password",
+        "location": "body"
+      }
+    ]
+  }
+  ```
+
+#### Invalid Credentials:
+- **Status Code:** 404 Not Found
+- **Response Body:**
+  ```json
+  {
+    "message": "Invalid email or Password"
+  }
+  ```
+
+### Example Request:
+```sh
+curl -X POST http://localhost:4000/captains/login \
+-H "Content-Type: application/json" \
+-d '{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}'
+```
+
+### Example Response:
+```json
+{
+  "message": "Captain logged in successfully",
+  "captain": {
+    "_id": "captain_id",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "vehicle": {
+      "color": "red",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  },
+  "token": "jwt_token"
+}
+```
+
+# Captain Profile API
+
+## Endpoint: `/captains/profile`
+
+### Method: GET
+
+### Description:
+This endpoint retrieves the profile information of the currently authenticated captain. Requires a valid JWT token in the request header.
+
+### Authentication:
+Bearer Token required in Authorization header
+
+### Responses:
+
+#### Success:
+- **Status Code:** 200 OK
+- **Response Body:**
+  ```json
+  {
+    "captain": {
+      "_id": "captain_id",
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
+      },
+      "email": "john.doe@example.com",
+      "vehicle": {
+        "color": "red",
+        "plate": "ABC123",
+        "capacity": 4,
+        "vehicleType": "car"
+      }
+    }
+  }
+  ```
+
+#### Unauthorized:
+- **Status Code:** 401 Unauthorized
+- **Response Body:**
+  ```json
+  {
+    "message": "Unauthorized access"
+  }
+  ```
+
+### Example Request:
+```sh
+curl -X GET http://localhost:4000/captains/profile \
+-H "Authorization: Bearer jwt_token"
+```
+
+# Captain Logout API
+
+## Endpoint: `/captains/logout`
+
+### Method: GET
+
+### Description:
+This endpoint logs out the current captain by invalidating their JWT token and clearing the cookie.
+
+### Authentication:
+Bearer Token required in Authorization header
+
+### Responses:
+
+#### Success:
+- **Status Code:** 200 OK
+- **Response Body:**
+  ```json
+  {
+    "message": "Captain logged out successfully"
+  }
+  ```
+
+#### Unauthorized:
+- **Status Code:** 401 Unauthorized
+- **Response Body:**
+  ```json
+  {
+    "message": "Unauthorized access"
+  }
+  ```
+
+### Example Request:
+```sh
+curl -X GET http://localhost:4000/captains/logout \
+-H "Authorization: Bearer jwt_token"
+```
+
+### Example Response:
+```json
+{
+  "message": "Captain logged out successfully"
+}
+```
