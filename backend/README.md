@@ -252,7 +252,7 @@ curl -X GET http://localhost:4000/users/profile \
 This endpoint logs out the current user by invalidating their JWT token and clearing the cookie.
 
 ### Authentication:
-Bearer Token required in Authorization header or in Cookie
+Bearer Token required in Authorization header
 
 ### Responses:
 
@@ -278,4 +278,158 @@ Bearer Token required in Authorization header or in Cookie
 ```sh
 curl -X GET http://localhost:4000/users/logout \
 -H "Authorization: Bearer jwt_token"
+```
+
+# Captain Registration API
+
+## Endpoint: `/captains/register`
+
+### Method: POST
+
+### Description:
+This endpoint is used to register a new captain. It validates the input data, hashes the password, creates a new captain in the database, and returns a JWT token.
+
+### Request Body:
+The request body should be a JSON object with the following fields:
+
+- `fullname`: An object containing:
+  - `firstname` (string, required, minimum length: 3)
+  - `lastname` (string, optional, minimum length: 3)
+- `email` (string, required, must be a valid email)
+- `password` (string, required, minimum length: 6)
+- `vehicle`: An object containing:
+  - `color` (string, required, minimum length: 3)
+  - `plate` (string, required, minimum length: 3)
+  - `capacity` (number, required, minimum value: 1)
+  - `vehicleType` (string, required, must be one of: 'car', 'motorcycle', 'auto')
+
+Example:
+```json
+{
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com",
+  "password": "password123",
+  "vehicle": {
+    "color": "red",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+
+### Responses:
+
+#### Success:
+- **Status Code:** 201 Created
+- **Response Body:**
+  ```json
+  {
+    "message": "Captain created successfully",
+    "captain": {
+      "_id": "captain_id",
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
+      },
+      "email": "john.doe@example.com",
+      "vehicle": {
+        "color": "red",
+        "plate": "ABC123",
+        "capacity": 4,
+        "vehicleType": "car"
+      }
+    },
+    "token": "jwt_token"
+  }
+  ```
+
+#### Validation Errors:
+- **Status Code:** 400 Bad Request
+- **Response Body:**
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Invalid Email",
+        "param": "email",
+        "location": "body"
+      },
+      {
+        "msg": "First name must be at least 3 characters long",
+        "param": "fullname.firstname",
+        "location": "body"
+      },
+      {
+        "msg": "Password must be at least 6 characters long",
+        "param": "password",
+        "location": "body"
+      },
+      {
+        "msg": "Color must be at least 3 characters long",
+        "param": "vehicle.color",
+        "location": "body"
+      },
+      {
+        "msg": "Plate must be at least 3 characters long",
+        "param": "vehicle.plate",
+        "location": "body"
+      },
+      {
+        "msg": "Capacity must be at least 1 character long",
+        "param": "vehicle.capacity",
+        "location": "body"
+      },
+      {
+        "msg": "Invalid vehicle type",
+        "param": "vehicle.vehicleType",
+        "location": "body"
+      }
+    ]
+  }
+  ```
+
+### Example Request:
+```sh
+curl -X POST http://localhost:4000/captains/register \
+-H "Content-Type: application/json" \
+-d '{
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com",
+  "password": "password123",
+  "vehicle": {
+    "color": "red",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}'
+```
+
+### Example Response:
+```json
+{
+  "message": "Captain created successfully",
+  "captain": {
+    "_id": "captain_id",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "vehicle": {
+      "color": "red",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  },
+  "token": "jwt_token"
+}
 ```
