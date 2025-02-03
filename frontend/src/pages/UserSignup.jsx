@@ -1,26 +1,38 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios';
+import { UserDataContext } from '../context/UserContext';
 
 const UserSignup = () => {
 
+   const navigate = useNavigate();
+   const { user, setUser } = useContext(UserDataContext);
+
    const [email, setEmail] = useState('')
    const [password, setPassword] = useState('');
-   const [firstName, setFirstName] = useState('');
-   const [lastName, setLastName] = useState('')
+   const [firstname, setFirstName] = useState('');
+   const [lastname, setLastName] = useState('')
 
-   const [userData, setUserData] = useState({})
-
-   const submitHandler = (e) => {
+   const submitHandler = async (e) => {
       e.preventDefault();
-      setUserData({
-         fullName: {
-            firstName,
-            lastName,
+      const newUser = {
+         fullname: {
+            firstname,
+            lastname,
          },
          email,
          password,
-      })
-      console.log(userData);
+      }
+
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, newUser);
+
+      if (response.status === 201) {
+         const data = response.data;
+         setUser(data?.user);
+         localStorage.setItem('token', data?.token)
+         navigate('/home');
+      }
+
       setEmail('');
       setFirstName('');
       setLastName('');
@@ -44,7 +56,7 @@ const UserSignup = () => {
                      className='bg-[#EEEEEE] rounded px-4 py-2 border w-1/2 text-lg placeholder:text-base outline-none'
                      type='text'
                      placeholder='First name'
-                     value={firstName}
+                     value={firstname}
                      onChange={(e) => setFirstName(e.target.value)}
                   />
                   <input
@@ -52,7 +64,7 @@ const UserSignup = () => {
                      className='bg-[#EEEEEE] rounded px-4 py-2 border w-1/2 text-lg placeholder:text-base outline-none'
                      type='text'
                      placeholder='Last name'
-                     value={lastName}
+                     value={lastname}
                      onChange={(e) => setLastName(e.target.value)}
                   />
                </div>
@@ -80,7 +92,7 @@ const UserSignup = () => {
                <button
                   className='bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2 border w-full text-lg '
                >
-                  Login
+                  Create Account
                </button>
             </form>
 
