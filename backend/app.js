@@ -20,7 +20,6 @@ app.get('/', (req, res) => {
    res.send("Helo World");
 })
 
-
 app.use('/users', userRoutes);
 app.use('/captains', captainRoutes);
 
